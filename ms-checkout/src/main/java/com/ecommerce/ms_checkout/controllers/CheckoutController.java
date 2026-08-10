@@ -5,9 +5,11 @@ import com.ecommerce.ms_checkout.models.Order;
 import com.ecommerce.ms_checkout.patterns.template.CheckoutProcessor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.CrossOrigin;
 
 import java.util.Locale;
 
+@CrossOrigin(origins = "*")
 @RestController
 @RequestMapping("/api/checkout")
 public class CheckoutController {

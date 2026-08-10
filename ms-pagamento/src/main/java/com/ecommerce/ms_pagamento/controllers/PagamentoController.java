@@ -11,11 +11,14 @@ import com.ecommerce.ms_pagamento.models.PagamentoResponse;
 import com.ecommerce.ms_pagamento.patterns.factory.ValidacaoFactory;
 import com.ecommerce.ms_pagamento.patterns.strategy.ValidacaoResultado;
 import com.ecommerce.ms_pagamento.patterns.strategy.ValidacaoStrategy;
+import org.springframework.web.bind.annotation.CrossOrigin;
 
 /**
  * Recebe o POST do ms-checkout, valida usando a Strategy certa
  * (escolhida pela Factory) e devolve o resultado da transação.
  */
+
+@CrossOrigin(origins = "*")
 @RestController
 @RequestMapping("/api/pagamentos")
 public class PagamentoController {

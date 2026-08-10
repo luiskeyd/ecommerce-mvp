@@ -1,0 +1,175 @@
+:root {
+  /* Paleta de cores do e-commerce */
+  --primary: #4f46e5;
+  --primary-hover: #4338ca;
+  --bg-color: #f3f4f6;
+  --card-bg: #ffffff;
+  --text-main: #1f2937;
+  --text-muted: #6b7280;
+  --border-color: #e5e7eb;
+  --success: #10b981;
+  --danger: #ef4444;
+  --danger-bg: #fef2f2;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  background-color: var(--bg-color);
+  color: var(--text-main);
+  max-width: 800px;
+  margin: 40px auto;
+  padding: 30px;
+  background-color: var(--card-bg);
+  border-radius: 12px;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  line-height: 1.5;
+}
+
+@media (max-width: 600px) {
+  body {
+    margin: 0;
+    border-radius: 0;
+    box-shadow: none;
+    padding: 20px;
+  }
+}
+
+/* Tipografia */
+h1 { font-size: 24px; font-weight: 700; margin-bottom: 4px; color: var(--text-main); }
+h2 { font-size: 18px; font-weight: 600; margin: 0 0 20px; padding-bottom: 10px; border-bottom: 1px solid var(--border-color); }
+p { color: var(--text-muted); margin-top: 0; }
+
+/* Estrutura */
+fieldset { border: none; padding: 0; margin-bottom: 40px; }
+hr { border: 0; border-top: 1px solid var(--border-color); margin: 30px 0; }
+
+/* Tabela do Carrinho */
+table { width: 100%; border-collapse: collapse; margin-bottom: 12px; }
+th { text-transform: uppercase; font-size: 12px; font-weight: 600; color: var(--text-muted); border-bottom: 2px solid var(--border-color); padding: 0 8px 12px; text-align: left; }
+td { padding: 16px 8px; border-bottom: 1px solid var(--border-color); vertical-align: middle; }
+td.right, th.right { text-align: right; }
+
+.qty-btns { 
+  display: inline-flex; 
+  align-items: center; 
+  gap: 12px; 
+  background: var(--bg-color); 
+  padding: 4px 8px; 
+  border-radius: 6px; 
+}
+.qty-btns button { 
+  background: #fff; 
+  border: 1px solid var(--border-color);
+  border-radius: 4px; 
+  width: 28px; 
+  height: 28px; 
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer; 
+  font-weight: 600;
+  transition: 0.2s;
+  color: var(--text-main);
+}
+.qty-btns button:hover { background: var(--border-color); }
+.qty-btns span { font-weight: 500; font-size: 14px; min-width: 12px; text-align: center; }
+
+.totals-row td { border-bottom: none; padding: 8px; color: var(--text-muted); }
+.totals-row.total td { font-weight: 700; font-size: 18px; color: var(--text-main); border-top: 2px solid var(--border-color); padding-top: 16px; margin-top: 8px; }
+
+/* Formulários e Inputs */
+label { display: block; margin-bottom: 6px; font-size: 14px; font-weight: 500; }
+input[type=text], input[type=number] { 
+  width: 100%; 
+  padding: 12px; 
+  margin-bottom: 16px; 
+  border: 1px solid var(--border-color); 
+  border-radius: 6px; 
+  font-size: 15px; 
+  transition: all 0.2s;
+}
+input:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.15); }
+
+/* Opções de Pagamento */
+.pay-opt { margin-bottom: 12px; }
+.pay-opt label { 
+  display: flex; 
+  align-items: center; 
+  gap: 10px; 
+  padding: 16px; 
+  border: 1px solid var(--border-color); 
+  border-radius: 8px; 
+  cursor: pointer; 
+  background: #fff;
+  transition: 0.2s;
+  margin: 0;
+}
+.pay-opt label:hover { border-color: #cbd5e1; background: #f8fafc; }
+.pay-opt input[type=radio] { accent-color: var(--primary); transform: scale(1.2); }
+
+.pay-detail { display: none; background: #f8fafc; border: 1px solid var(--border-color); border-top: none; padding: 20px; border-radius: 0 0 8px 8px; margin-top: -16px; margin-bottom: 20px; }
+.pay-detail.show { display: block; }
+
+/* Botões Principais */
+button#btnFinalizar, button#btnNovoPedido { 
+  width: 100%; 
+  padding: 16px; 
+  font-size: 16px; 
+  font-weight: 600; 
+  background-color: var(--primary); 
+  color: #fff; 
+  border: none; 
+  border-radius: 8px; 
+  cursor: pointer; 
+  transition: 0.2s; 
+  margin-bottom: 12px;
+}
+button#btnFinalizar:hover:not(:disabled), button#btnNovoPedido:hover { background-color: var(--primary-hover); }
+button#btnFinalizar:disabled { opacity: 0.6; cursor: not-allowed; }
+
+/* Alertas */
+.alert { display: none; background-color: var(--danger-bg); border: 1px solid #fca5a5; color: var(--danger); padding: 16px; border-radius: 8px; font-weight: 500; margin-bottom: 20px; }
+.alert.show { display: block; }
+
+/* Tela de Confirmação */
+.confirm { display: none; text-align: center; padding: 40px 0; }
+.confirm.show { display: block; }
+.confirm h2 { color: var(--success); border: none; font-size: 28px; margin-bottom: 8px; }
+.timeline { text-align: left; background: #f9fafb; border: 1px solid var(--border-color); padding: 24px 24px 24px 44px; border-radius: 8px; margin: 24px 0; color: var(--text-main); }
+.timeline li { margin-bottom: 12px; font-size: 15px; }
+
+/* Painel do Desenvolvedor (Modo Técnico) */
+button#toggleDev { background: transparent; border: 1px solid var(--border-color); color: var(--text-muted); border-radius: 6px; padding: 6px 12px; font-size: 12px; cursor: pointer; }
+button#toggleDev:hover { background: var(--bg-color); }
+
+.dev-panel { display: none; margin-top: 20px; border: 1px dashed #cbd5e1; border-radius: 8px; padding: 20px; background: #f8fafc; }
+.dev-panel.show { display: block; }
+.endpoints label { font-size: 12px; display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; }
+.endpoints input { width: 65% !important; margin: 0 !important; padding: 6px 10px !important; font-size: 13px !important; }
+
+.log { 
+  background: #1e293b; 
+  color: #e2e8f0; 
+  border: none; 
+  border-radius: 6px; 
+  padding: 16px; 
+  font-family: 'Fira Code', 'Courier New', monospace; 
+  font-size: 13px;
+  max-height: 250px; 
+  overflow-y: auto; 
+  white-space: pre-wrap; 
+  margin-bottom: 16px; 
+}
+.log-line { margin-bottom: 4px; }
+.log-line.req { color: #38bdf8; } /* Azul claro */
+.log-line.step { color: #94a3b8; padding-left: 12px; } /* Cinza */
+.log-line.ok { color: #4ade80; } /* Verde */
+.log-line.err { color: #f87171; } /* Vermelho */
+
+#directReadout { font-size: 14px; background: #e0e7ff; color: #3730a3; padding: 12px; border-radius: 6px; margin-bottom: 16px; }
+#btnDirect { background: #475569; color: white; border: none; padding: 8px 16px; border-radius: 6px; cursor: pointer; }
+#btnDirect:hover { background: #334155; }

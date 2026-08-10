@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Aria Store · Finalizar compra</title>
+<link rel="stylesheet" href="interface.css">
+</head>
+<body>
+
+<h1>Aria Store</h1>
+<p><small>Carrinho &gt; Pagamento &gt; Confirmação</small></p>
+
+<!-- CHECKOUT VIEW -->
+<div id="checkoutView">
+
+  <fieldset>
+    <h2>Resumo do pedido</h2>
+    <table>
+      <thead>
+        <tr><th>Produto</th><th>Qtd</th><th class="right">Preço</th></tr>
+      </thead>
+      <tbody id="cartRows"></tbody>
+      <tfoot>
+        <tr class="totals-row"><td colspan="2">Subtotal</td><td class="right" id="sumSubtotal">R$ 0,00</td></tr>
+        <tr class="totals-row"><td colspan="2">Frete</td><td class="right">Grátis</td></tr>
+        <tr class="totals-row total"><td colspan="2">Total</td><td class="right" id="sumTotal">R$ 0,00</td></tr>
+      </tfoot>
+    </table>
+  </fieldset>
+
+  <fieldset>
+    <h2>Forma de pagamento</h2>
+    <div class="pay-opt">
+      <label><input type="radio" name="tipoPag" value="pix" checked> Pix (aprovação imediata)</label>
+    </div>
+    <div class="pay-opt">
+      <label><input type="radio" name="tipoPag" value="cartao"> Cartão de crédito</label>
+    </div>
+
+    <div class="pay-detail show" id="detailPix">
+      <p><small>O código Pix é gerado depois que você confirmar o pedido.</small></p>
+    </div>
+
+    <div class="pay-detail" id="detailCartao">
+      <label>Número do cartão</label>
+      <input type="text" id="cardNumber" placeholder="0000 0000 0000 0000" maxlength="19">
+      <label>Nome impresso no cartão</label>
+      <input type="text" id="cardName" placeholder="Como está no cartão">
+      <label>Validade</label>
+      <input type="text" id="cardExp" placeholder="MM/AA" maxlength="5" style="width:80px;">
+      <label>CVV</label>
+      <input type="text" id="cardCvv" placeholder="000" maxlength="4" style="width:60px;">
+    </div>
+  </fieldset>
+
+  <div class="alert" id="checkoutAlert"></div>
+
+  <button id="btnFinalizar">Finalizar compra</button>
+  <p><small>Seus dados de pagamento não ficam salvos.</small></p>
+</div>
+
+<!-- CONFIRMATION VIEW -->
+<div class="confirm" id="confirmView">
+  <h2 id="confirmTitle">Pedido confirmado</h2>
+  <p id="confirmSub">Você vai receber a confirmação também por e-mail.</p>
+  <p id="confirmOrderId"><small></small></p>
+  <ul class="timeline" id="confirmTimeline"></ul>
+  <button id="btnNovoPedido">Fazer novo pedido</button>
+</div>
+
+<hr>
+
+<!-- DEV PANEL -->
+<p><button id="toggleDev">modo técnico (para a defesa)</button></p>
+<div class="dev-panel" id="devPanel">
+  <h2>Endpoints</h2>
+  <div class="endpoints">
+    <label>ms-checkout <input id="urlCheckout" value="http://localhost:8081/api/checkout"></label>
+    <label>ms-pagamento <input id="urlPagamento" value="http://localhost:8080/api/pagamentos"></label>
+  </div>
+
+  <h2>Log de requisições (loja)</h2>
+  <div class="log" id="devLog"></div>
+
+  <hr>
+
+  <h2>Testar ms-pagamento isolado (Factory + Strategy)</h2>
+  <label>Valor <input type="number" id="directValor" value="3.00" step="0.01" style="width:100px;"></label>
+  <label>Tipo
+    <select id="directTipo">
+      <option value="pix">pix</option>
+      <option value="cartao">cartao</option>
+      <option value="boleto">boleto</option>
+    </select>
+  </label>
+  <button id="btnDirect">Enviar</button>
+  <p id="directReadout"></p>
+  <div class="log" id="directLog"></div>
+</div>
+
+<script>
+// ---------------- state ----------------
+const CART = [
+  { name:'Fone Bluetooth Aria X2', price:249.90, qty:1 },
+  { name:'Case de silicone', price:39.90, qty:2 }
+];
+
+function fmt(v){ return v.toLocaleString('pt-BR', {style:'currency', currency:'BRL'}); }
+
+function renderCart(){
+  const box = document.getElementById('cartRows');
+  box.innerHTML = '';
+  CART.forEach((item, idx) => {
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td>${item.name}</td>
+      <td class="qty-btns">
+        <button data-idx="${idx}" data-dir="-1">-</button>
+        <span>${item.qty}</span>
+        <button data-idx="${idx}" data-dir="1">+</button>
+      </td>
+      <td class="right">${fmt(item.price * item.qty)}</td>
+    `;
+    box.appendChild(tr);
+  });
+  box.querySelectorAll('.qty-btns button').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const idx = +btn.dataset.idx, dir = +btn.dataset.dir;
+      CART[idx].qty = Math.min(9, Math.max(1, CART[idx].qty + dir));
+      renderCart();
+      renderTotals();
+    });
+  });
+}
+
+function subtotal(){ return CART.reduce((s,i) => s + i.price*i.qty, 0); }
+
+function renderTotals(){
+  document.getElementById('sumSubtotal').textContent = fmt(subtotal());
+  document.getElementById('sumTotal').textContent = fmt(subtotal());
+}
+
+renderCart();
+renderTotals();
+
+// ---------------- payment method switch ----------------
+document.querySelectorAll('input[name=tipoPag]').forEach(radio => {
+  radio.addEventListener('change', () => {
+    document.getElementById('detailPix').classList.toggle('show', radio.value === 'pix');
+    document.getElementById('detailCartao').classList.toggle('show', radio.value === 'cartao');
+  });
+});
+
+document.getElementById('cardNumber').addEventListener('input', (e) => {
+  e.target.value = e.target.value.replace(/\D/g,'').slice(0,16).replace(/(\d{4})(?=\d)/g,'$1 ');
+});
+document.getElementById('cardExp').addEventListener('input', (e) => {
+  e.target.value = e.target.value.replace(/\D/g,'').slice(0,4).replace(/(\d{2})(?=\d)/,'$1/');
+});
+
+// ---------------- dev log helpers ----------------
+function ts(){
+  const d = new Date();
+  return d.toLocaleTimeString('pt-BR', {hour12:false}) + '.' + String(d.getMilliseconds()).padStart(3,'0');
+}
+function devLine(container, text, cls){
+  const el = document.createElement('div');
+  el.className = 'log-line ' + (cls||'');
+  el.textContent = '[' + ts() + '] ' + text;
+  container.appendChild(el);
+  container.scrollTop = container.scrollHeight;
+}
+
+document.getElementById('toggleDev').addEventListener('click', () => {
+  document.getElementById('devPanel').classList.toggle('show');
+});
+
+// ---------------- checkout submit ----------------
+document.getElementById('btnFinalizar').addEventListener('click', async () => {
+  const btn = document.getElementById('btnFinalizar');
+  const alertBox = document.getElementById('checkoutAlert');
+  const devLog = document.getElementById('devLog');
+  const url = document.getElementById('urlCheckout').value.trim();
+  const tipo = document.querySelector('input[name=tipoPag]:checked').value;
+  const valor = subtotal();
+
+  alertBox.classList.remove('show');
+  btn.disabled = true; btn.textContent = 'Processando…';
+
+  const payload = { valor, tipo };
+  devLine(devLog, 'POST ' + url, 'req');
+  devLine(devLog, JSON.stringify(payload));
+
+  try {
+    const res = await fetch(url, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    });
+    const raw = await res.text();
+    let data;
+    try { data = JSON.parse(raw); } catch { data = null; }
+
+    if (!data) {
+      devLine(devLog, 'HTTP ' + res.status + ' — ' + raw, 'err');
+      showAlert('Não foi possível processar o pagamento agora. Tente novamente em instantes.');
+      return;
+    }
+
+    (data.etapas || []).forEach(e => devLine(devLog, e, 'step'));
+    devLine(devLog, `Pedido #${data.pedidoId ?? '—'} → ${data.status}`, data.status === 'PAGO' ? 'ok' : 'err');
+
+    if (data.status === 'PAGO') {
+      showConfirmation(data);
+    } else {
+      const motivo = (data.etapas || []).find(e => e.toLowerCase().includes('recusado'));
+      showAlert('Pagamento recusado. ' + (motivo ? motivo.replace(/^Resposta recusado:?\s*/i,'') : 'Tente outro método de pagamento.'));
+    }
+  } catch (err) {
+    devLine(devLog, 'Falha de rede: ' + err.message, 'err');
+    showAlert('Não conseguimos conectar ao servidor de pagamentos. Verifique sua conexão e tente novamente.');
+  } finally {
+    btn.disabled = false; btn.textContent = 'Finalizar compra';
+  }
+});
+
+function showAlert(msg){
+  const alertBox = document.getElementById('checkoutAlert');
+  alertBox.textContent = msg;
+  alertBox.classList.add('show');
+}
+
+function showConfirmation(data){
+  document.getElementById('checkoutView').style.display = 'none';
+  const confirm = document.getElementById('confirmView');
+  confirm.classList.add('show');
+  document.getElementById('confirmTitle').textContent = 'Pedido confirmado';
+  document.getElementById('confirmOrderId').innerHTML = '<small>Pedido #' + data.pedidoId + ' · ' + fmt(subtotal()) + '</small>';
+
+  const list = document.getElementById('confirmTimeline');
+  list.innerHTML = '';
+  (data.etapas || []).forEach(etapa => {
+    const li = document.createElement('li');
+    li.textContent = etapa;
+    list.appendChild(li);
+  });
+}
+
+document.getElementById('btnNovoPedido').addEventListener('click', () => {
+  document.getElementById('confirmView').classList.remove('show');
+  document.getElementById('checkoutView').style.display = '';
+  document.getElementById('checkoutAlert').classList.remove('show');
+});
+
+// ---------------- dev: teste direto ms-pagamento ----------------
+const strategyMap = { pix:'PixValidacaoStrategy', cartao:'CartaoValidacaoStrategy', boleto:'BoletoValidacaoStrategy' };
+
+document.getElementById('btnDirect').addEventListener('click', async () => {
+  const btn = document.getElementById('btnDirect');
+  const log = document.getElementById('directLog');
+  const readout = document.getElementById('directReadout');
+  const url = document.getElementById('urlPagamento').value.trim();
+  const valor = parseFloat(document.getElementById('directValor').value);
+  const tipo = document.getElementById('directTipo').value;
+
+  log.innerHTML = '';
+  readout.textContent = '';
+  const payload = { valor, tipo };
+  devLine(log, 'POST ' + url, 'req');
+  devLine(log, JSON.stringify(payload));
+
+  btn.disabled = true;
+  try {
+    const res = await fetch(url, {
+      method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(payload)
+    });
+    const raw = await res.text();
+    let data;
+    try { data = JSON.parse(raw); } catch { data = null; }
+
+    if (!data) {
+      devLine(log, 'HTTP ' + res.status + ' — ' + raw, 'err');
+      readout.textContent = 'tipo desconhecido — ValidacaoFactory não encontrou strategy';
+      return;
+    }
+    const ok = data.status === 'aprovado';
+    devLine(log, JSON.stringify(data), ok ? 'ok' : 'err');
+    readout.innerHTML = 'Factory → <b>' + (strategyMap[tipo] || tipo) + '</b> · status: <b>' + data.status + '</b>' +
+      (data.motivo ? ' · motivo: <b>' + data.motivo + '</b>' : '');
+  } catch (err) {
+    devLine(log, 'Falha de rede: ' + err.message, 'err');
+    readout.textContent = 'Não foi possível conectar ao ms-pagamento.';
+  } finally {
+    btn.disabled = false;
+  }
+});
+</script>
+</body>
+</html>
