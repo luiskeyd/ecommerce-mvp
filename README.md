@@ -67,7 +67,7 @@ Rel(ci_cd, ms_checkout, "Build / Test / Deploy")
 Rel(ci_cd, ms_pagamento, "Build / Test / Deploy")
 ```
 
-## 🔄 Justificativa da Arquitetura
+##  Justificativa da Arquitetura
 
 ### Por que Microserviços?
 
@@ -80,7 +80,7 @@ Rel(ci_cd, ms_pagamento, "Build / Test / Deploy")
 ---
 
 
-## 🎯 Princípios de Projeto
+##  Princípios de Projeto
 
 ### Alta Coesão
 Cada microserviço tem uma **única razão para mudar**:
@@ -101,9 +101,9 @@ Cada container tem **uma única responsabilidade clara**:
 
 ---
 
-## 🎯 Design Patterns Implementados
+##  Design Patterns Implementados
 
-### 1️⃣ Strategy Pattern
+###  Strategy Pattern
 
 **Propósito**: Define uma família de algoritmos intercambiáveis
 
@@ -120,7 +120,7 @@ Cada container tem **uma única responsabilidade clara**:
 
 ---
 
-### 2️⃣ Factory Pattern
+###  Factory Pattern
 
 **Propósito**: Cria objetos sem expor a lógica de criação
 
@@ -134,7 +134,7 @@ Cada container tem **uma única responsabilidade clara**:
 
 ---
 
-### 3️⃣ Template Method Pattern
+###  Template Method Pattern
 
 **Propósito**: Define a estrutura de um algoritmo, deixando detalhes para subclasses
 
