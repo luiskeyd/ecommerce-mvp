@@ -1,12 +1,12 @@
 # E-commerce MVP — Arquitetura de Software
 
-## 📋 Visão Geral
+## Visão Geral
 
 Projeto de MVP de e-commerce desenvolvido com **arquitetura em microserviços**, implementando design patterns e princípios de projeto sólidos.
 
 ---
 
-## 🏗️ Arquitetura C4 Model
+##  Arquitetura C4 Model
 
 ### Nível 1 — Contexto
 
@@ -67,19 +67,18 @@ Rel(ci_cd, ms_checkout, "Build / Test / Deploy")
 Rel(ci_cd, ms_pagamento, "Build / Test / Deploy")
 ```
 
-**Componentes principais:**
+## 🔄 Justificativa da Arquitetura
 
-| Componente | Tipo | Responsabilidade |
-|-----------|------|------------------|
-| **Frontend** | Web/Mobile | Interface com usuário |
-| **API Gateway** | Gateway | Orquestra requisições, segurança, logging |
-| **ms-checkout** | Microserviço | Carrinho, criação de pedidos |
-| **ms-pagamento** | Microserviço | Processamento de pagamentos |
-| **Database** | Armazenamento | Pedidos, clientes, inventário |
-| **Message Broker** | Comunicação | Eventos assíncronos |
-| **CI/CD** | DevOps | Deploy automatizado |
+### Por que Microserviços?
+
+1. **Escalabilidade Independente**: Escale apenas o serviço que precisa
+2. **Manutenibilidade**: Unidades menores e focadas
+3. **Responsabilidade Bem Definida**: Cada serviço faz uma coisa bem
+4. **Tolerância a Falhas**: Falha em um não para o sistema
+5. **Comprovado no Mercado**: Amazon, Netflix, Uber utilizam
 
 ---
+
 
 ## 🎯 Princípios de Projeto
 
@@ -153,39 +152,3 @@ Cada container tem **uma única responsabilidade clara**:
 
 ---
 
-## 🔄 Justificativa da Arquitetura
-
-### Por que Microserviços?
-
-1. **Escalabilidade Independente**: Escale apenas o serviço que precisa
-2. **Manutenibilidade**: Unidades menores e focadas
-3. **Responsabilidade Bem Definida**: Cada serviço faz uma coisa bem
-4. **Tolerância a Falhas**: Falha em um não para o sistema
-5. **Comprovado no Mercado**: Amazon, Netflix, Uber utilizam
-
----
-
-## 📁 Estrutura do Projeto
-
-```
-.
-├── docs/
-│   ├── Diagramas/          # Diagramas C4
-│   └── ADR's/              # Architecture Decision Records
-├── ms-checkout/            # Microserviço de checkout
-│   └── src/main/java/com/ecommerce/ms_checkout/patterns/
-│       ├── strategy/       # Strategy Pattern
-│       ├── factory/        # Factory Pattern
-│       └── template/       # Template Method Pattern
-├── ms-pagamento/           # Microserviço de pagamentos
-└── README.md               # Este arquivo
-```
-
----
-
-## 👥 Equipe e Contribuições
-
-- **Edson** - Arquitetura C4 e Contexto
-- **Luis** - Microserviço ms-checkout
-- **Você** - Microserviço ms-pagamento
-- **Roberth** - Architecture Decision Records (ADRs)
