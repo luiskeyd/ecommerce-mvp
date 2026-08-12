@@ -20,10 +20,15 @@ Rel(admin, web_app, "Usa (painel administrativo)")
 Rel(web_app, api_gateway, "HTTP/HTTPS (REST API) - chamadas de frontend para backend")
 Rel(api_gateway, ms_checkout, "HTTP/REST — requisições de checkout e pedidos")
 Rel(api_gateway, ms_pagamento, "HTTP/REST — requisições de pagamento")
+
+Rel(ms_checkout, ms_pagamento, "HTTP/REST — solicita processamento de pagamento (síncrono)")
 Rel(ms_checkout, db_orders, "CRUD — grava/consulta pedidos e carrinho")
 Rel(ms_pagamento, db_orders, "Atualiza status de pagamento / grava transações")
+
 Rel(ms_checkout, queue, "Publica eventos (pedido.criado, pedido.atualizado)")
-Rel(ms_pagamento, queue, "Consume eventos (processar pagamento assíncrono) — opcional")
+Rel(queue, ms_pagamento, "Consume eventos (processar pagamento assíncrono)")
+
 Rel(ms_pagamento, pagamento_externo, "API segura (HTTPS) — solicita autorização/captura de pagamento")
+
 Rel(ci_cd, ms_checkout, "Build / Test / Deploy")
 Rel(ci_cd, ms_pagamento, "Build / Test / Deploy")
